@@ -59,6 +59,7 @@ public partial class GameManager : Node2D
         if (row == -1)
         {
             this.StatusLabel.Text = $"Column {column + 1} is full!";
+            // add win screen here once scores are setup
 
             return;
         }
@@ -67,6 +68,7 @@ public partial class GameManager : Node2D
         {
             this.StatusLabel.Text = $"Player {this.currentPlayer} wins!";
             this.gameOver = true;
+            // add win screen here for now
 
             return;
         }
