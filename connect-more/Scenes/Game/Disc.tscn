@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://cj7i1pgfopdn7"]
+
+[ext_resource type="Script" uid="uid://dg4cijpwo6tkb" path="res://Scripts/Game/Disc.cs" id="1_pklhr"]
+[ext_resource type="Texture2D" uid="uid://dptqogqw46pig" path="res://Assets/Disc.png" id="2_qqnpo"]
+
+[node name="Disc" type="Node2D" node_paths=PackedStringArray("Sprite")]
+script = ExtResource("1_pklhr")
+PlayerColors = PackedColorArray(1, 0, 0, 1, 1, 1, 0, 1)
+Sprite = NodePath("Sprite")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_qqnpo")

@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://cbgia4gv8vq0f"]
+
+[ext_resource type="Script" uid="uid://nhftny58tv1h" path="res://Scripts/Game/Board.cs" id="1_nd4as"]
+[ext_resource type="PackedScene" uid="uid://cj7i1pgfopdn7" path="res://Scenes/Game/Disc.tscn" id="2_igt3p"]
+
+[node name="Board" type="Node2D" node_paths=PackedStringArray("DiscsContainer")]
+script = ExtResource("1_nd4as")
+DiscScene = ExtResource("2_igt3p")
+CellSize = 128
+DiscsContainer = NodePath("DiscContainer")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0.15, 0.15, 0.15, 1)
+
+[node name="DiscContainer" type="Node2D" parent="."]
+position = Vector2(960, 1080)
