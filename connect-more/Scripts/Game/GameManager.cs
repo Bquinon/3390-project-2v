@@ -14,6 +14,8 @@ public partial class GameManager : Node2D
 
     public int Players { get; set; } = 2;
     
+    public int[] PlayersScores { get; set; }
+    
     private int currentPlayer = 1;
     private bool gameOver;
 
