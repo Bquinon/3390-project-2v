@@ -40,20 +40,19 @@ public partial class Board : Node2D
 
 	public int DropDisc(int column, int playerId)
 	{
-		if (column < 0
-		 || column >= this.Columns)
+		if (!column.IsBetween(0, this.Columns))
 		{
 			return -1;
 		}
 
-		for (int r = 0; r < this.Rows; r++)
+		for (int row = 0; row < this.Rows; row++)
 		{
-			if (this.grid[r, column] == 0)
+			if (this.grid[row, column] == 0)
 			{
-				this.grid[r, column] = playerId;
-				this.SpawnDiscVisual(r, column, playerId);
+				this.grid[row, column] = playerId;
+				this.SpawnDiscVisual(row, column, playerId);
 
-				return r;
+				return row;
 			}
 		}
 
@@ -95,14 +94,14 @@ public partial class Board : Node2D
 		return this.grid[row, column];
 	}
 
-	public bool CheckWin(int row, int col, int playerId)
+	public bool CheckWin(int row, int column, int playerId)
 	{
 		if (playerId == 0)
 		{
 			return false;
 		}
 
-		(int deltaRow, int deltaCol)[] directions =
+		(int deltaRow, int deltaColumn)[] directions =
 		[
 			(0, 1),  // horizontal
 			(1, 0),  // vertical
@@ -114,8 +113,8 @@ public partial class Board : Node2D
 		{
 			int count = 1;
 
-			count += this.CountInDirection(row, col, deltaRow, deltaCol, playerId);
-			count += this.CountInDirection(row, col, -deltaRow, -deltaCol, playerId);
+			count += this.CountInDirection(row, column, deltaRow, deltaCol, playerId);
+			count += this.CountInDirection(row, column, -deltaRow, -deltaCol, playerId);
 
 			if (count >= 4)
 			{
@@ -126,11 +125,11 @@ public partial class Board : Node2D
 		return false;
 	}
 
-	private int CountInDirection(int startRow, int startCol, int deltaRow, int deltaCol, int playerId)
+	private int CountInDirection(int startRow, int startColumn, int deltaRow, int deltaColumn, int playerId)
 	{
 		int count = 0;
 		int row = startRow + deltaRow;
-		int col = startCol + deltaCol;
+		int col = startColumn + deltaColumn;
 		
 		while (row.IsBetween(0, this.Rows) &&
 			   col.IsBetween(0, this.Columns) && 
@@ -138,7 +137,7 @@ public partial class Board : Node2D
 		{
 			count++;
 			row += deltaRow;
-			col += deltaCol;
+			col += deltaColumn;
 		}
 
 		return count;
@@ -146,19 +145,19 @@ public partial class Board : Node2D
 	
 	public bool IsFull()
 	{
-		for (int c = 0; c < this.Columns; c++)
+		for (int column = 0; column < this.Columns; column++)
 		{
-			if (this.grid[this.Rows - 1, c] == 0)
+			if (this.grid[this.Rows - 1, column] == 0)
 			{
 				return false;
 			}
 		}
 
-		for (int r = 0; r < this.Rows; r++)
+		for (int row = 0; row < this.Rows; row++)
 		{
 			for (int c = 0; c < this.Columns; c++)
 			{
-				if (this.grid[r, c] == 0)
+				if (this.grid[row, c] == 0)
 				{
 					return false;
 				}

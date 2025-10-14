@@ -12,6 +12,8 @@ public partial class GameManager : Node2D
 
     [Export] public Control Columns { get; set; }
 
+    public int Players { get; set; } = 2;
+    
     private int currentPlayer = 1;
     private bool gameOver;
 
@@ -75,7 +77,7 @@ public partial class GameManager : Node2D
             return;
         }
 
-        this.currentPlayer = this.currentPlayer == 1 ? 2 : 1;
+        this.currentPlayer = (this.currentPlayer % this.Players) + 1;
         this.UpdateStatus();
     }
 
