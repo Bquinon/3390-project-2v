@@ -5,25 +5,29 @@ namespace ConnectMore.Scripts.Game;
 
 public partial class Board : Node2D
 {
+	private const int OffsetFromTop = 125;
+
 	[Export] public int Rows { get; set; } = 6;
 
 	[Export] public int Columns { get; set; } = 7;
 
 	[Export] public PackedScene DiscBackgroundScene { get; set; }
-	
-	[Export] public PackedScene DiscScene           { get; set; }
-	
+
+	[Export] public PackedScene DiscScene { get; set; }
+
 	[Export] public Node2D DiscContainer { get; set; }
-	
+
 	[Export] public Node2D DiscBackgroundContainer { get; set; }
-	
+
+	[Export] public int ConnectLength { get; set; } = 4;
+
 	public int CellSize { get; private set; }
 	
 	private int[,] grid; // Rows x Columns
 
 	public override void _Ready()
 	{
-		int maxRowHeight = (1080 - 86) / this.Rows;
+		int maxRowHeight = (1080 - OffsetFromTop) / this.Rows;
 		int maxColumnWidth = 1920 / this.Columns;
 		this.CellSize = Math.Min(maxRowHeight, maxColumnWidth);
 		
@@ -126,11 +130,13 @@ public partial class Board : Node2D
 		return this.grid[row, column];
 	}
 
-	public bool CheckWin(int row, int column, int playerId)
+	public int CheckMatch(int row, int column, int playerId)
 	{
+		int matches = 0;
+		
 		if (playerId == 0)
 		{
-			return false;
+			return matches;
 		}
 
 		(int deltaRow, int deltaColumn)[] directions =
@@ -148,13 +154,13 @@ public partial class Board : Node2D
 			count += this.CountInDirection(row, column, deltaRow, deltaColumn, playerId);
 			count += this.CountInDirection(row, column, -deltaRow, -deltaColumn, playerId);
 
-			if (count >= 4)
+			if (count >= this.ConnectLength)
 			{
-				return true;
+				matches++;
 			}
 		}
 
-		return false;
+		return matches;
 	}
 
 	private int CountInDirection(int startRow, int startColumn, int deltaRow, int deltaColumn, int playerId)
