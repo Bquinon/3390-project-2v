@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://dict3csl6u5i7"]
+
+[ext_resource type="Script" uid="uid://bgehp5ixfhk1w" path="res://Scripts/Game/DiscBackground.cs" id="1_0ohpt"]
+[ext_resource type="Texture2D" uid="uid://uyr35w4j5dwv" path="res://Assets/DiscBackground.png" id="2_01i42"]
+
+[node name="DiscBackground" type="Node2D" node_paths=PackedStringArray("Sprite")]
+script = ExtResource("1_0ohpt")
+ColorOverride = Color(0.18431373, 0.29803923, 0.39607844, 1)
+Sprite = NodePath("Sprite2D")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_01i42")

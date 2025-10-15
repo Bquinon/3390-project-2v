@@ -23,17 +23,17 @@ public partial class GameManager : Node2D
     {
         this.RestartButton.Pressed += this.OnRestartPressed;
 
-        int i = 0;
-
-        foreach (Node n in this.Columns.GetChildren())
+        for (int i = 0; i < this.Board.Columns; i++)
         {
-            if (n is Button b)
-            {
-                int colIndex = i;
-                b.Text = (i + 1).ToString();
-                b.Pressed += () => this.OnColumnPressed(colIndex);
-                i++;
-            }
+            Button button = new();
+            button.Text = (i + 1).ToString();
+            int colIndex = i;
+            button.Pressed += () => this.OnColumnPressed(colIndex);
+            int size = this.Board.CellSize - 5;
+            button.CustomMinimumSize = new Vector2(size, size);
+            button.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+            button.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
+            this.Columns.AddChild(button);
         }
 
         this.UpdateStatus();

@@ -1,3 +1,4 @@
+using System;
 using Godot;
 
 namespace ConnectMore.Scripts.Game;
@@ -8,31 +9,51 @@ public partial class Board : Node2D
 
 	[Export] public int Columns { get; set; } = 7;
 
-	[Export] public PackedScene DiscScene { get; set; }
-
-	[Export] public int CellSize { get; set; }
+	[Export] public PackedScene DiscBackgroundScene { get; set; }
 	
-	[Export] public Node2D DiscsContainer { get; set; }
+	[Export] public PackedScene DiscScene           { get; set; }
+	
+	[Export] public Node2D DiscContainer { get; set; }
+	
+	[Export] public Node2D DiscBackgroundContainer { get; set; }
+	
+	public int CellSize { get; private set; }
 	
 	private int[,] grid; // Rows x Columns
 
 	public override void _Ready()
 	{
+		int maxRowHeight = (1080 - 86) / this.Rows;
+		int maxColumnWidth = 1920 / this.Columns;
+		this.CellSize = Math.Min(maxRowHeight, maxColumnWidth);
+		
 		this.grid = new int[this.Rows, this.Columns];
 		this.ClearBoard();
+		this.SetupBackgrounds();
+	}
+
+	private void SetupBackgrounds()
+	{
+		for (int row = 0; row < this.Rows; row++)
+		{
+			for (int column = 0; column < this.Columns; column++)
+			{
+				this.SpawnDiscBackgroundVisual(row, column);
+			}
+		}
 	}
 
 	public void ClearBoard()
 	{
-		for (int r = 0; r < this.Rows; r++)
+		for (int row = 0; row < this.Rows; row++)
 		{
-			for (int c = 0; c < this.Columns; c++)
+			for (int column = 0; column < this.Columns; column++)
 			{
-				this.grid[r, c] = 0;
+				this.grid[row, column] = 0;
 			}
 		}
 
-		foreach (Node child in this.DiscsContainer.GetChildren())
+		foreach (Node child in this.DiscContainer.GetChildren())
 		{
 			child.QueueFree();
 		}
@@ -59,6 +80,17 @@ public partial class Board : Node2D
 		return -1; // full
 	}
 
+	private void SpawnDiscBackgroundVisual(int row, int column)
+	{
+		DiscBackground discBackground = this.DiscBackgroundScene.Instantiate<DiscBackground>();
+		discBackground.Name = $"DiscBackground_{row}_{column}";
+		discBackground.TargetSize = this.CellSize;
+		discBackground.Position = this.GridToLocalPosition(row, column);
+		discBackground.UpdateVisual();
+
+		this.DiscBackgroundContainer.AddChild(discBackground);
+	}
+
 	private void SpawnDiscVisual(int row, int column, int playerId)
 	{
 		Disc disc = this.DiscScene.Instantiate<Disc>();
@@ -68,7 +100,7 @@ public partial class Board : Node2D
 		disc.PlayerId = playerId;
 		disc.UpdateVisual();
 
-		this.DiscsContainer.AddChild(disc);
+		this.DiscContainer.AddChild(disc);
 	}
 
 	// acts as bottom center anchor
@@ -109,12 +141,12 @@ public partial class Board : Node2D
 			(1, -1), // anti-diagonal
 		];
 
-		foreach ((int deltaRow, int deltaCol) in directions)
+		foreach ((int deltaRow, int deltaColumn) in directions)
 		{
 			int count = 1;
 
-			count += this.CountInDirection(row, column, deltaRow, deltaCol, playerId);
-			count += this.CountInDirection(row, column, -deltaRow, -deltaCol, playerId);
+			count += this.CountInDirection(row, column, deltaRow, deltaColumn, playerId);
+			count += this.CountInDirection(row, column, -deltaRow, -deltaColumn, playerId);
 
 			if (count >= 4)
 			{
@@ -129,15 +161,15 @@ public partial class Board : Node2D
 	{
 		int count = 0;
 		int row = startRow + deltaRow;
-		int col = startColumn + deltaColumn;
+		int column = startColumn + deltaColumn;
 		
 		while (row.IsBetween(0, this.Rows) &&
-			   col.IsBetween(0, this.Columns) && 
-			   this.grid[row, col] == playerId)
+			   column.IsBetween(0, this.Columns) && 
+			   this.grid[row, column] == playerId)
 		{
 			count++;
 			row += deltaRow;
-			col += deltaColumn;
+			column += deltaColumn;
 		}
 
 		return count;
@@ -155,9 +187,9 @@ public partial class Board : Node2D
 
 		for (int row = 0; row < this.Rows; row++)
 		{
-			for (int c = 0; c < this.Columns; c++)
+			for (int column = 0; column < this.Columns; column++)
 			{
-				if (this.grid[row, c] == 0)
+				if (this.grid[row, column] == 0)
 				{
 					return false;
 				}
