@@ -183,14 +183,6 @@ public partial class Board : Node2D
 	
 	public bool IsFull()
 	{
-		for (int column = 0; column < this.Columns; column++)
-		{
-			if (this.grid[this.Rows - 1, column] == 0)
-			{
-				return false;
-			}
-		}
-
 		for (int row = 0; row < this.Rows; row++)
 		{
 			for (int column = 0; column < this.Columns; column++)
