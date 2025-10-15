@@ -65,21 +65,33 @@ public partial class GameManager : Node2D
             return;
         }
 
-        if (this.TryGetRow(column, out int row))
+        int row = this.Board.DropDisc(column, this.currentPlayer);
+
+        if (row == RowFull)
         {
+            this.StatusLabel.Text = $"Column {column + 1} is full! (Player {this.currentPlayer}'s turn)";
+
             return;
         }
 
-        if (this.CheckMatch(column, row))
+        int matches = this.Board.CheckMatch(row, column, this.currentPlayer);
+
+        if (matches > 0)
         {
-            return;
+            this.PlayersScores[this.currentPlayer - 1] += matches;
+            this.UpdateScore();
+
+            string plurality = matches == 1 
+                ? "a point" 
+                : $"{matches} points";
+            
+            this.StatusLabel.Text = $"Player {this.currentPlayer} gains {plurality}!";
         }
-        
-        if (this.CheckFull())
+
+        if (this.Board.IsFull())
         {
-            this.gameOver = true;
             this.OnGameEnd();
-         
+
             return;
         }
 
@@ -97,55 +109,6 @@ public partial class GameManager : Node2D
         this.StatusLabel.Text = $"Player {this.currentPlayer}'s turn";
     }
 
-    private bool CheckFull()
-    {
-        if (!this.Board.IsFull())
-        {
-            return false;
-        }
-
-        int bestPlayer = this.PlayersScores.ElementAt(this.PlayersScores.Max());
-        this.StatusLabel.Text = $"Game Over! Player{bestPlayer} wins!";
-
-        return true;
-    }
-
-    private bool TryGetRow(int column, out int row)
-    {
-        row = this.Board.DropDisc(column, this.currentPlayer);
-
-        if (row != RowFull)
-        {
-            return false;
-        }
-
-        this.StatusLabel.Text = $"Column {column + 1} is full!  (player{this.currentPlayer}'s turn)";
-
-        return true;
-    }
-
-    private bool CheckMatch(int column, int row)
-    {
-        int matches = this.Board.CheckMatch(row, column, this.currentPlayer);
-
-        if (matches <= 0)
-        {
-            return false;
-        }
-
-        this.PlayersScores[this.currentPlayer - 1] += matches;
-        this.UpdateScore();
-
-        string plurality = matches == 1 
-            ? "a point" 
-            : $"{matches} points";
-        
-        this.StatusLabel.Text = $"Player {this.currentPlayer} gains {plurality}! Player {this.currentPlayer + 1}'s turn";
-        this.currentPlayer = (this.currentPlayer % this.Players) + 1;
-
-        return true;
-    }
-
     private void UpdateScore()
     {
         this.ScoresLabel.Text = string.Join(" | ", 
@@ -154,6 +117,21 @@ public partial class GameManager : Node2D
 
     private void OnGameEnd()
     {
+        this.gameOver = true;
+        
+        int maxScore = this.PlayersScores.Max();
+        
+        string[] winners = this.PlayersScores
+                               .Select((score, index) => new { Player = index + 1, Score = score })
+                               .Where(p => p.Score == maxScore)
+                               .Select(p => $"Player {p.Player}")
+                               .ToArray();
+
+        string winnerText = winners.Length > 1
+            ? $"{string.Join(" & ", winners)} tie with {maxScore} points!"
+            : $"{winners[0]} wins with {maxScore} points!";
+
+        this.StatusLabel.Text = $"Game Over! {winnerText}";
         //TODO: add win screen here (where we will put scores and stuff)
     }
 }
