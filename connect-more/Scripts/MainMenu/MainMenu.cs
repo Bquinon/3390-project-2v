@@ -10,8 +10,8 @@ public partial class MainMenu : Control
 	
 	public override void _Ready()
 	{
-		this.GetNode<Button>("VBoxContainer/Button").Pressed += this.OnStartPressed;
-		this.GetNode<Button>("VBoxContainer/Button2").Pressed += this.OnLeaderboardPressed;
+		this.GetNode<Button>("TextureRect/VBoxContainer/Button").Pressed += this.OnStartPressed;
+		this.GetNode<Button>("TextureRect/VBoxContainer/Button2").Pressed += this.OnLeaderboardPressed;
 	}
 
 	private void OnStartPressed()
