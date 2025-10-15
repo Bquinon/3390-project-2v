@@ -5,8 +5,6 @@ namespace ConnectMore.Scripts.Game;
 
 public partial class GameManager : Node2D
 {
-    public const int RowFull = -1;
-    
     [Export] public Board Board { get; set; }
 
     [Export] public Label StatusLabel { get; set; }
@@ -21,7 +19,7 @@ public partial class GameManager : Node2D
     
     public int[] PlayersScores { get; set; }
     
-    private int currentPlayer = 1;
+    private int currentPlayer = 0;
     private bool gameOver;
 
     public override void _Ready()
@@ -49,7 +47,7 @@ public partial class GameManager : Node2D
     private void OnRestartPressed()
     {
         this.Board.ClearBoard();
-        this.currentPlayer = 1;
+        this.currentPlayer = 0;
         this.gameOver = false;
         this.ResetStatusMessage();
         this.PlayersScores = new int[this.Players]; // lazy oneliner
@@ -67,7 +65,7 @@ public partial class GameManager : Node2D
 
         int row = this.Board.DropDisc(column, this.currentPlayer);
 
-        if (row == RowFull)
+        if (row == Board.ColumnFull)
         {
             this.StatusLabel.Text = $"Column {column + 1} is full! (Player {this.currentPlayer}'s turn)";
 
@@ -78,7 +76,7 @@ public partial class GameManager : Node2D
 
         if (matches > 0)
         {
-            this.PlayersScores[this.currentPlayer - 1] += matches;
+            this.PlayersScores[this.currentPlayer] += matches;
             this.UpdateScore();
 
             string plurality = matches == 1 
@@ -100,7 +98,8 @@ public partial class GameManager : Node2D
 
     private void NextPlayer()
     {
-        this.currentPlayer = (this.currentPlayer % this.Players) + 1;
+        this.currentPlayer += 1;
+        this.currentPlayer %= this.Players;
         this.ResetStatusMessage();
     }
 

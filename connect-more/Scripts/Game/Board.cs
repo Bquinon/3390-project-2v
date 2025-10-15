@@ -5,6 +5,10 @@ namespace ConnectMore.Scripts.Game;
 
 public partial class Board : Node2D
 {
+	public const int ColumnFull = -1;
+	
+	public const int SlotEmpty = -1;
+	
 	private const int OffsetFromTop = 125;
 
 	[Export] public int Rows { get; set; } = 6;
@@ -27,13 +31,17 @@ public partial class Board : Node2D
 
 	public override void _Ready()
 	{
-		int maxRowHeight = (1080 - OffsetFromTop) / this.Rows;
-		int maxColumnWidth = 1920 / this.Columns;
-		this.CellSize = Math.Min(maxRowHeight, maxColumnWidth);
-		
+		this.SetCellSize();
 		this.grid = new int[this.Rows, this.Columns];
 		this.ClearBoard();
 		this.SetupBackgrounds();
+	}
+
+	private void SetCellSize()
+	{
+		int maxRowHeight = (1080 - OffsetFromTop) / this.Rows;
+		int maxColumnWidth = 1920 / this.Columns;
+		this.CellSize = Math.Min(maxRowHeight, maxColumnWidth);
 	}
 
 	private void SetupBackgrounds()
@@ -53,7 +61,7 @@ public partial class Board : Node2D
 		{
 			for (int column = 0; column < this.Columns; column++)
 			{
-				this.grid[row, column] = 0;
+				this.grid[row, column] = SlotEmpty;
 			}
 		}
 
@@ -67,12 +75,12 @@ public partial class Board : Node2D
 	{
 		if (!column.IsBetween(0, this.Columns))
 		{
-			return GameManager.RowFull;
+			return ColumnFull;
 		}
 
 		for (int row = 0; row < this.Rows; row++)
 		{
-			if (this.grid[row, column] == 0)
+			if (this.grid[row, column] == SlotEmpty)
 			{
 				this.grid[row, column] = playerId;
 				this.SpawnDiscVisual(row, column, playerId);
@@ -81,7 +89,7 @@ public partial class Board : Node2D
 			}
 		}
 
-		return GameManager.RowFull;
+		return ColumnFull;
 	}
 
 	private void SpawnDiscBackgroundVisual(int row, int column)
@@ -119,25 +127,9 @@ public partial class Board : Node2D
 		return new Vector2(x, y);
 	}
 
-	public int GetCell(int row, int column)
-	{
-		if (!row.IsBetween(0, this.Rows) ||
-			!column.IsBetween(0, this.Columns))
-		{
-			return -1;
-		}
-
-		return this.grid[row, column];
-	}
-
 	public int CheckMatch(int row, int column, int playerId)
 	{
 		int matches = 0;
-		
-		if (playerId == 0)
-		{
-			return matches;
-		}
 
 		(int deltaRow, int deltaColumn)[] directions =
 		[
@@ -151,8 +143,8 @@ public partial class Board : Node2D
 		{
 			int count = 1;
 
-			count += this.CountInDirection(row, column, deltaRow, deltaColumn, playerId);
-			count += this.CountInDirection(row, column, -deltaRow, -deltaColumn, playerId);
+			count += this.CountInDirection(row, column, deltaRow, deltaColumn, playerId); // forwards
+			count += this.CountInDirection(row, column, -deltaRow, -deltaColumn, playerId); // backwards
 
 			if (count >= this.ConnectLength)
 			{
@@ -181,13 +173,12 @@ public partial class Board : Node2D
 		return count;
 	}
 	
+	// we don't have to check the whole board, only the top row
 	public bool IsFull()
 	{
-		// we don't have to check the whole board, only the top row
 		for (int column = 0; column < this.Columns; column++)
 		{
-			if (this.grid[this.Rows - 1, column] == 0)
-
+			if (this.grid[this.Rows - 1, column] == SlotEmpty)
 			{
 				return false;
 			}

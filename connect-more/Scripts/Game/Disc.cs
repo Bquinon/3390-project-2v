@@ -26,6 +26,6 @@ public partial class Disc : Node2D
         float scaleY = this.TargetSize / textureSize.Y;
 
         this.Sprite.Scale = new Vector2(scaleX, scaleY);
-        this.Sprite.Modulate = this.PlayerColors[this.PlayerId - 1];
+        this.Sprite.Modulate = this.PlayerColors[this.PlayerId];
     }
 }
