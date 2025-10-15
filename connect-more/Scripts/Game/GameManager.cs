@@ -19,39 +19,42 @@ public partial class GameManager : Node2D
     
     public int[] PlayersScores { get; set; }
     
-    private int currentPlayer = 0;
+    private int currentPlayer;
     private bool gameOver;
 
     public override void _Ready()
     {
         this.PlayersScores = new int[this.Players];
-        this.RestartButton.Pressed += this.OnRestartPressed;
+        this.RestartButton.Pressed += this.ResetGame;
 
-        for (int i = 0; i < this.Board.Columns; i++)
+        this.SetupColumnButtons();
+        this.ResetGame();
+    }
+
+    private void SetupColumnButtons()
+    {
+        for (int column = 0; column < this.Board.Columns; column++)
         {
             Button button = new();
             button.AddThemeStyleboxOverride("normal", new StyleBoxEmpty());
-            int colIndex = i;
-            button.Pressed += () => this.OnColumnPressed(colIndex);
+            int columnIndex = column;
+            button.Pressed += () => this.OnColumnPressed(columnIndex);
             int size = this.Board.CellSize;
             button.CustomMinimumSize = new Vector2(size, size * this.Board.Rows);
             button.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
             button.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
             this.Columns.AddChild(button);
         }
-
-        this.ResetStatusMessage();
-        this.UpdateScore();
     }
 
-    private void OnRestartPressed()
+    private void ResetGame()
     {
         this.Board.ClearBoard();
         this.currentPlayer = 0;
         this.gameOver = false;
-        this.ResetStatusMessage();
         this.PlayersScores = new int[this.Players]; // lazy oneliner
         this.UpdateScore();
+        this.UpdateStatus();
     }
 
     private void OnColumnPressed(int column)
@@ -73,7 +76,7 @@ public partial class GameManager : Node2D
         }
 
         int matches = this.Board.CheckMatch(row, column, this.currentPlayer);
-
+        
         if (matches > 0)
         {
             this.PlayersScores[this.currentPlayer] += matches;
@@ -100,10 +103,10 @@ public partial class GameManager : Node2D
     {
         this.currentPlayer += 1;
         this.currentPlayer %= this.Players;
-        this.ResetStatusMessage();
+        this.UpdateStatus();
     }
 
-    private void ResetStatusMessage()
+    private void UpdateStatus()
     {
         this.StatusLabel.Text = $"Player {this.currentPlayer}'s turn";
     }
