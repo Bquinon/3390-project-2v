@@ -13,7 +13,7 @@ config_version=5
 config/name="ConnectMore"
 run/main_scene="uid://b0n7xx2mw3kir"
 config/features=PackedStringArray("4.5", "C#", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="uid://b1fqfrm5wvvra"
 
 [display]
 
