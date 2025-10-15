@@ -4,6 +4,8 @@ namespace ConnectMore.Scripts.Game;
 
 public partial class GameManager : Node2D
 {
+    public const int RowFull = -1;
+    
     [Export] public Board Board { get; set; }
 
     [Export] public Label StatusLabel { get; set; }
@@ -12,7 +14,7 @@ public partial class GameManager : Node2D
 
     [Export] public Control Columns { get; set; }
 
-    public int Players { get; set; } = 2;
+    [Export] public int Players { get; set; } = 2;
     
     public int[] PlayersScores { get; set; }
     
@@ -26,11 +28,11 @@ public partial class GameManager : Node2D
         for (int i = 0; i < this.Board.Columns; i++)
         {
             Button button = new();
-            button.Text = (i + 1).ToString();
+            button.AddThemeStyleboxOverride("normal", new StyleBoxEmpty());
             int colIndex = i;
             button.Pressed += () => this.OnColumnPressed(colIndex);
-            int size = this.Board.CellSize - 5;
-            button.CustomMinimumSize = new Vector2(size, size);
+            int size = this.Board.CellSize;
+            button.CustomMinimumSize = new Vector2(size, size * this.Board.Rows);
             button.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
             button.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
             this.Columns.AddChild(button);
@@ -56,11 +58,10 @@ public partial class GameManager : Node2D
 
         int row = this.Board.DropDisc(column, this.currentPlayer);
 
-        if (row == -1)
+        if (row == RowFull)
         {
             this.StatusLabel.Text = $"Column {column + 1} is full!";
-            // add win screen here once scores are setup
-
+            
             return;
         }
 
@@ -68,7 +69,6 @@ public partial class GameManager : Node2D
         {
             this.StatusLabel.Text = $"Player {this.currentPlayer} wins!";
             this.gameOver = true;
-            // add win screen here for now
 
             return;
         }
@@ -89,6 +89,7 @@ public partial class GameManager : Node2D
     {
         if (this.gameOver)
         {
+            // add win screen here (where we will put scores and stuff)
             return;
         }
 

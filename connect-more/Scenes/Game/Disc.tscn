@@ -5,7 +5,7 @@
 
 [node name="Disc" type="Node2D" node_paths=PackedStringArray("Sprite")]
 script = ExtResource("1_pklhr")
-PlayerColors = PackedColorArray(1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1)
+PlayerColors = PackedColorArray(1, 0, 0, 1, 1, 0.49803922, 0, 1, 1, 1, 0, 1, 0.5019608, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0.5, 1, 0, 1, 1, 1, 0, 0.5, 1, 1, 0, 0, 1, 1, 0.5, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0.5, 1, 0, 0, 0, 1, 1, 1, 1, 1)
 Sprite = NodePath("Sprite")
 
 [node name="Sprite" type="Sprite2D" parent="."]

@@ -6,8 +6,6 @@
 
 [node name="Board" type="Node2D" node_paths=PackedStringArray("DiscContainer", "DiscBackgroundContainer")]
 script = ExtResource("1_nd4as")
-Rows = 15
-Columns = 15
 DiscBackgroundScene = ExtResource("3_f65gn")
 DiscScene = ExtResource("2_igt3p")
 DiscContainer = NodePath("DiscContainer")

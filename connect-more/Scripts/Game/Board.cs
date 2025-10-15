@@ -63,7 +63,7 @@ public partial class Board : Node2D
 	{
 		if (!column.IsBetween(0, this.Columns))
 		{
-			return -1;
+			return GameManager.RowFull;
 		}
 
 		for (int row = 0; row < this.Rows; row++)
@@ -77,7 +77,7 @@ public partial class Board : Node2D
 			}
 		}
 
-		return -1; // full
+		return GameManager.RowFull;
 	}
 
 	private void SpawnDiscBackgroundVisual(int row, int column)
