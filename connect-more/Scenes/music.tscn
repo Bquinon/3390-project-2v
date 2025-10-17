@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dktaq050rdrw3"]
+
+[ext_resource type="AudioStream" uid="uid://b6ej38ppri2c5" path="res://Assets/Dj_Maksim_Porechnyh_-_PRESENTS_-_Dj_MaI_sim.mp3" id="1_fbmny"]
+
+[node name="Music" type="AudioStreamPlayer"]
+stream = ExtResource("1_fbmny")
+autoplay = true

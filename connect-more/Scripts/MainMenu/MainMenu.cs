@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using ConnectMore.Scripts.Game;
 
 namespace ConnectMore.Scripts.MainMenu
 {
@@ -18,7 +19,7 @@ namespace ConnectMore.Scripts.MainMenu
         private Button cancelButton;
 
         // Reference to the game scene
-        private Node2D gameReference;
+        private GameManager gameManager;
 
         public override void _Ready()
         {
@@ -122,11 +123,14 @@ namespace ConnectMore.Scripts.MainMenu
             int connect = (int)connectInput.Value;
 
             // Instantiate the game scene and store a reference
-            gameReference = GameScene.Instantiate<Node2D>();
+            //gameReference = GameScene.Instantiate<Node2D>();
 
             // Reference the GameManager node
-            var gameManager = gameReference.GetNodeOrNull<ConnectMore.Scripts.Game.GameManager>("GameManager");
-
+            //var gameManager = gameReference.GetNodeOrNull<ConnectMore.Scripts.Game.GameManager>("GameManager");
+            gameManager = GameScene.Instantiate<GameManager>();
+            
+            
+            
             if (gameManager != null)
             {
                 // Set the properties from the main menu
@@ -141,7 +145,7 @@ namespace ConnectMore.Scripts.MainMenu
             }
 
             // Add the game scene to the tree
-            GetTree().Root.AddChild(gameReference);
+            GetTree().Root.AddChild(this.gameManager);
 
             // Hide/remove main menu
             this.Hide();
