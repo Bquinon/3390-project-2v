@@ -1,157 +1,158 @@
 using System.Linq;
-using Godot;
 using ConnectMore.Scripts.Data;
+using ConnectMore.Scripts.UI;
+using Godot;
 
 namespace ConnectMore.Scripts.Game;
 
 public partial class GameManager : Node2D
 {
-	[Export] public Board Board { get; set; }
+    [Export] public Board Board { get; set; }
 
-	[Export] public Label StatusLabel { get; set; }
-	
-	[Export] public Label ScoresLabel { get; set; }
+    [Export] public Label StatusLabel { get; set; }
 
-	[Export] public Button RestartButton { get; set; }
+    [Export] public Label ScoresLabel { get; set; }
 
-	[Export] public Control Columns { get; set; }
+    [Export] public Button RestartButton { get; set; }
 
-	[Export] public int Players { get; set; } = 2;
-	
-	[Export] public PackedScene LeaderboardScene { get; set; }
-	
-	public int[] PlayersScores { get; set; }
-	
-	private int currentPlayer;
-	private bool gameOver;
+    [Export] public Control Columns { get; set; }
 
-	public override void _Ready()
-	{
-		this.PlayersScores = new int[this.Players];
-		this.RestartButton.Pressed += this.ResetGame;
+    [Export] public int Players { get; set; } = 2;
 
-		this.SetupColumnButtons();
-		this.ResetGame();
-	}
+    [Export] public PackedScene LeaderboardScene { get; set; }
 
-	private void SetupColumnButtons()
-	{
-		for (int column = 0; column < this.Board.Columns; column++)
-		{
-			Button button = new();
-			button.AddThemeStyleboxOverride("normal", new StyleBoxEmpty());
-			int columnIndex = column;
-			button.Pressed += () => this.OnColumnPressed(columnIndex);
-			int size = this.Board.CellSize;
-			button.CustomMinimumSize = new Vector2(size, size * this.Board.Rows);
-			button.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
-			button.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
-			this.Columns.AddChild(button);
-		}
-	}
+    public int[] PlayersScores { get; set; }
 
-	private void ResetGame()
-	{
-		this.Board.ClearBoard();
-		this.currentPlayer = 0;
-		this.gameOver = false;
-		this.PlayersScores = new int[this.Players]; // lazy oneliner
-		this.UpdateScore();
-		this.UpdateStatus();
-	}
+    private int currentPlayer;
+    private bool gameOver;
 
-	private void OnColumnPressed(int column)
-	{
-		if (this.gameOver)
-		{
-			this.StatusLabel.Text = "Game is over. Please reset to try again.";
+    public override void _Ready()
+    {
+        this.PlayersScores = new int[this.Players];
+        this.RestartButton.Pressed += this.ResetGame;
 
-			return;
-		}
+        this.SetupColumnButtons();
+        this.ResetGame();
+    }
 
-		int row = this.Board.DropDisc(column, this.currentPlayer);
+    private void SetupColumnButtons()
+    {
+        for (int column = 0; column < this.Board.Columns; column++)
+        {
+            Button button = new();
+            button.AddThemeStyleboxOverride("normal", new StyleBoxEmpty());
+            int columnIndex = column;
+            button.Pressed += () => this.OnColumnPressed(columnIndex);
+            int size = this.Board.CellSize;
+            button.CustomMinimumSize = new Vector2(size, size * this.Board.Rows);
+            button.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
+            button.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
+            this.Columns.AddChild(button);
+        }
+    }
 
-		if (row == Board.ColumnFull)
-		{
-			this.StatusLabel.Text = $"Column {column + 1} is full! (Player {this.currentPlayer}'s turn)";
+    private void ResetGame()
+    {
+        this.Board.ClearBoard();
+        this.currentPlayer = 0;
+        this.gameOver = false;
+        this.PlayersScores = new int[this.Players]; // lazy oneliner
+        this.UpdateScore();
+        this.UpdateStatus();
+    }
 
-			return;
-		}
+    private void OnColumnPressed(int column)
+    {
+        if (this.gameOver)
+        {
+            this.StatusLabel.Text = "Game is over. Please reset to try again.";
 
-		int matches = this.Board.CheckMatch(row, column, this.currentPlayer);
-		
-		if (matches > 0)
-		{
-			this.PlayersScores[this.currentPlayer] += matches;
-			this.UpdateScore();
+            return;
+        }
 
-			string plurality = matches == 1 
-				? "a point" 
-				: $"{matches} points";
-			
-			this.StatusLabel.Text = $"Player {this.currentPlayer} gains {plurality}!";
-		}
+        int row = this.Board.DropDisc(column, this.currentPlayer);
 
-		if (this.Board.IsFull())
-		{
-			this.OnGameEnd();
+        if (row == Board.ColumnFull)
+        {
+            this.StatusLabel.Text = $"Column {column + 1} is full! (Player {this.currentPlayer}'s turn)";
 
-			return;
-		}
+            return;
+        }
 
-		this.NextPlayer();
-	}
+        int matches = this.Board.CheckMatch(row, column, this.currentPlayer);
 
-	private void NextPlayer()
-	{
-		this.currentPlayer += 1;
-		this.currentPlayer %= this.Players;
-		this.UpdateStatus();
-	}
+        if (matches > 0)
+        {
+            this.PlayersScores[this.currentPlayer] += matches;
+            this.UpdateScore();
 
-	private void UpdateStatus()
-	{
-		this.StatusLabel.Text = $"Player {this.currentPlayer}'s turn";
-	}
+            string plurality = matches == 1
+                ? "a point"
+                : $"{matches} points";
 
-	private void UpdateScore()
-	{
-		this.ScoresLabel.Text = string.Join(" | ", 
-											this.PlayersScores.Select((score, index) => $"P{index + 1} = {score}"));
-	}
+            this.StatusLabel.Text = $"Player {this.currentPlayer} gains {plurality}!";
+        }
 
+        if (this.Board.IsFull())
+        {
+            this.OnGameEnd();
 
+            return;
+        }
 
+        this.NextPlayer();
+    }
 
-	private void OnGameEnd()
-	{
-		this.gameOver = true;
- 		
-		int maxScore = this.PlayersScores.Any() ? this.PlayersScores.Max() : 0;
-		
-		int[] winnerIndexes = this.PlayersScores
-			.Select((score, index) => new { PlayerIndex = index, Score = score })
-			.Where(p => p.Score == maxScore)
-			.Select(p => p.PlayerIndex)
-			.ToArray();
+    private void NextPlayer()
+    {
+        this.currentPlayer += 1;
+        this.currentPlayer %= this.Players;
+        this.UpdateStatus();
+    }
+
+    private void UpdateStatus()
+    {
+        this.StatusLabel.Text = $"Player {this.currentPlayer}'s turn";
+    }
+
+    private void UpdateScore()
+    {
+        this.ScoresLabel.Text = string.Join(" | ",
+                                            this.PlayersScores.Select((score, index) => $"P{index + 1} = {score}"));
+    }
+
+    private void OnGameEnd()
+    {
+        this.gameOver = true;
+
+        int maxScore = this.PlayersScores.Any() ? this.PlayersScores.Max() : 0;
+
+        int[] winnerIndexes = this.PlayersScores
+                                  .Select((score, index) => new
+                                  {
+                                      PlayerIndex = index,
+                                      Score = score,
+                                  })
+                                  .Where(p => p.Score == maxScore)
+                                  .Select(p => p.PlayerIndex)
+                                  .ToArray();
+
+        string[] winnerNames = winnerIndexes.Select(i => $"Player {i + 1}").ToArray();
+
+        string winnerText = winnerNames.Length > 1
+            ? $"{string.Join(" & ", winnerNames)} Tie!"
+            : $"{winnerNames[0]} Wins!";
+
+        this.ScoresLabel.Text = winnerText;
         
-			var gameData = GetNode<GameData>("/root/GameData");
-			
-			string[] winnerNames = winnerIndexes.Select(i => $"Player {i + 1}").ToArray();
-			string winnerText = winnerNames.Length > 1
-			? $"{string.Join(" & ", winnerNames)} Tie!"
-			: $"{winnerNames[0]} Wins!";
-			
-			gameData.WinnerString = winnerText;
-			gameData.PendingScoreEntry = new LeaderboardEntry(string.Empty, maxScore);
-		
-		if (this.LeaderboardScene != null)
-		{
-			GetTree().ChangeSceneToPacked(this.LeaderboardScene);
-		}
-		else
-		{
-			GD.PrintErr("LeaderboardScene is not set in the GameManager inspector!");
-		}
-	}
+        GameData gameData = new();
+        gameData.WinnerString = winnerText;
+        gameData.PendingScoreEntry = new LeaderboardEntry(string.Empty, maxScore);
+
+        Leaderboard leaderboard = this.LeaderboardScene.Instantiate<Leaderboard>();
+        leaderboard._gameData = gameData;
+        this.GetTree().Root.AddChild(leaderboard);
+        this.GetTree().CurrentScene = leaderboard;
+        this.GetTree().Root.RemoveChild(this);
+    }
 }

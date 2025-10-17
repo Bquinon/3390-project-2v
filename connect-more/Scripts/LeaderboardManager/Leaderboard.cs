@@ -13,28 +13,30 @@ public partial class Leaderboard : Control
 	[Export] public LineEdit NameLineEdit { get; set; }
 	[Export] public Button SaveNameButton { get; set; }
 	[Export] public Label PopupTitleLabel { get; set; }
-	
-	private GameData _gameData;
-	
-	public override void _Ready()
+
+    public GameData _gameData { get; set; }
+
+    public override void _Ready()
 	{
-		_gameData = GetNode<GameData>("/root/GameData");
-		
 		BackButton.Pressed += this.OnBackButtonPressed;
 		SaveNameButton.Pressed += this.OnSaveNamePressed;
-		
-		if (_gameData.PendingScoreEntry != null)
-		{
-			ShowNameEntryPopup();
-		}
-		else
-		{
-			NameEntryPopup.Hide();
-			PopulateLeaderboard();
-		}
 	}
-	
-	private void ShowNameEntryPopup()
+
+    public void Setup(GameData gameData)
+    {
+        _gameData = gameData;
+        if (gameData.PendingScoreEntry != null)
+        {
+            ShowNameEntryPopup();
+        }
+        else
+        {
+            NameEntryPopup.Hide();
+            PopulateLeaderboard();
+        }
+    }
+
+    private void ShowNameEntryPopup()
 	{
 		if (!string.IsNullOrEmpty(_gameData.WinnerString))
 		{
