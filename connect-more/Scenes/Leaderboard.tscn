@@ -1,8 +1,65 @@
-[gd_scene format=3 uid="uid://d2mhctnuvak3o"]
+[gd_scene load_steps=3 format=3 uid="uid://d2mhctnuvak3o"]
 
-[node name="Leaderboard" type="Node2D"]
+[ext_resource type="Script" uid="uid://b81b3817xhvsp" path="res://Scripts/LeaderboardManager/Leaderboard.cs" id="1_xvobe"]
+[ext_resource type="PackedScene" uid="uid://b0n7xx2mw3kir" path="res://Scenes/MainMenu/Main_menu.tscn" id="2_udga5"]
 
-[node name="Label" type="Label" parent="."]
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="Leaderboard" type="Control" node_paths=PackedStringArray("ScoreListContainer", "BackButton", "NameEntryPopup", "NameLineEdit", "SaveNameButton", "PopupTitleLabel")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xvobe")
+MainMenuScene = ExtResource("2_udga5")
+ScoreListContainer = NodePath("VBoxContainer/ScrollContainer/ScoreListContainer")
+BackButton = NodePath("VBoxContainer/BackButton")
+NameEntryPopup = NodePath("NameEntryPopup")
+NameLineEdit = NodePath("NameEntryPopup/VBoxContainer/NameLineEdit")
+SaveNameButton = NodePath("NameEntryPopup/VBoxContainer/SaveNameButton")
+PopupTitleLabel = NodePath("NameEntryPopup/VBoxContainer/PopupTitleLabel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -18.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
 text = "Leaderboard"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 1000)
+layout_mode = 2
+
+[node name="ScoreListContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Main Menu"
+
+[node name="NameEntryPopup" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_left = 538.0
+offset_top = 206.0
+offset_right = 1421.0
+offset_bottom = 695.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="NameEntryPopup"]
+layout_mode = 2
+
+[node name="PopupTitleLabel" type="Label" parent="NameEntryPopup/VBoxContainer"]
+layout_mode = 2
+
+[node name="NameLineEdit" type="LineEdit" parent="NameEntryPopup/VBoxContainer"]
+layout_mode = 2
+
+[node name="SaveNameButton" type="Button" parent="NameEntryPopup/VBoxContainer"]
+layout_mode = 2
+text = "Submit"
