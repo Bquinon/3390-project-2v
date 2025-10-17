@@ -1,7 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://d2mhctnuvak3o"]
 
 [ext_resource type="Script" uid="uid://b81b3817xhvsp" path="res://Scripts/LeaderboardManager/Leaderboard.cs" id="1_xvobe"]
-[ext_resource type="PackedScene" uid="uid://b0n7xx2mw3kir" path="res://Scenes/MainMenu/Main_menu.tscn" id="2_udga5"]
 
 [node name="Leaderboard" type="Control" node_paths=PackedStringArray("ScoreListContainer", "BackButton", "NameEntryPopup", "NameLineEdit", "SaveNameButton", "PopupTitleLabel")]
 layout_mode = 3
@@ -11,7 +10,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_xvobe")
-MainMenuScene = ExtResource("2_udga5")
 ScoreListContainer = NodePath("VBoxContainer/ScrollContainer/ScoreListContainer")
 BackButton = NodePath("VBoxContainer/BackButton")
 NameEntryPopup = NodePath("NameEntryPopup")

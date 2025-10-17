@@ -7,7 +7,6 @@ namespace ConnectMore.Scripts.UI;
 public partial class Leaderboard : Control
 
 {
-	[Export] public PackedScene MainMenuScene { get; set; }
 	[Export] public VBoxContainer ScoreListContainer { get; set; }
 	[Export] public Button BackButton { get; set; }
 	[Export] public PanelContainer NameEntryPopup { get; set; }
@@ -80,7 +79,7 @@ public partial class Leaderboard : Control
 	
 	private void OnBackButtonPressed()
 	{
-		GetTree().ChangeSceneToPacked(this.MainMenuScene);
+		GetTree().ChangeSceneToPacked(GD.Load<PackedScene>("res://Scenes/MainMenu/MainMenu.tscn"));
 	}
 	private void PopulateLeaderboard()
 	{

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://ch63vdwx11oen" path="res://Scripts/MainMenu/MainMenu.cs" id="1_7sp8y"]
 [ext_resource type="PackedScene" uid="uid://c8ucfo8ushw00" path="res://Scenes/Game/Game.tscn" id="2_uyxu2"]
-[ext_resource type="PackedScene" uid="uid://d2mhctnuvak3o" path="res://Scenes/Leaderboard.tscn" id="3_8vhqq"]
+[ext_resource type="PackedScene" uid="uid://d2mhctnuvak3o" path="res://Scenes/Leaderboard.tscn" id="3_kpx3y"]
 [ext_resource type="Texture2D" uid="uid://c0du1op11qjgo" path="res://Assets/Menu.png" id="4_8vhqq"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_siod4"]
@@ -16,7 +16,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_7sp8y")
 GameScene = ExtResource("2_uyxu2")
-LeaderboardScene = ExtResource("3_8vhqq")
+LeaderboardScene = ExtResource("3_kpx3y")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1
