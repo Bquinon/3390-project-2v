@@ -17,9 +17,9 @@ public partial class GameManager : Node2D
 
     [Export] public Control Columns { get; set; }
 
-    [Export] public int Players { get; set; } = 2;
-
     [Export] public PackedScene LeaderboardScene { get; set; }
+    
+    public GameSetup Settings { get; set; }
 
     public int[] PlayersScores { get; set; }
 
@@ -28,7 +28,6 @@ public partial class GameManager : Node2D
 
     public override void _Ready()
     {
-        this.PlayersScores = new int[this.Players];
         this.RestartButton.Pressed += this.ResetGame;
 
         this.SetupColumnButtons();
@@ -37,14 +36,14 @@ public partial class GameManager : Node2D
 
     private void SetupColumnButtons()
     {
-        for (int column = 0; column < this.Board.Columns; column++)
+        for (int column = 0; column < this.Settings.Columns; column++)
         {
             Button button = new();
             button.AddThemeStyleboxOverride("normal", new StyleBoxEmpty());
             int columnIndex = column;
             button.Pressed += () => this.OnColumnPressed(columnIndex);
             int size = this.Board.CellSize;
-            button.CustomMinimumSize = new Vector2(size, size * this.Board.Rows);
+            button.CustomMinimumSize = new Vector2(size, size * this.Settings.Rows);
             button.SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter;
             button.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
             this.Columns.AddChild(button);
@@ -56,7 +55,7 @@ public partial class GameManager : Node2D
         this.Board.ClearBoard();
         this.currentPlayer = 0;
         this.gameOver = false;
-        this.PlayersScores = new int[this.Players]; // lazy oneliner
+        this.PlayersScores = new int[this.Settings.Players]; // lazy oneliner
         this.UpdateScore();
         this.UpdateStatus();
     }
@@ -106,7 +105,7 @@ public partial class GameManager : Node2D
     private void NextPlayer()
     {
         this.currentPlayer += 1;
-        this.currentPlayer %= this.Players;
+        this.currentPlayer %= this.Settings.Players;
         this.UpdateStatus();
     }
 

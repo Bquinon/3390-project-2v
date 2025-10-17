@@ -9,12 +9,6 @@ public partial class Board : Node2D
     public const int SlotEmpty = -1;
     private const int OffsetFromTop = 125;
 
-    [Export] public int Rows { get; set; } = 6;
-	
-    [Export] public int Columns { get; set; } = 7;
-	
-    [Export] public int ConnectLength { get; set; } = 4;
-
     [Export] public PackedScene DiscBackgroundScene { get; set; }
 
     [Export] public PackedScene DiscScene { get; set; }
@@ -23,6 +17,8 @@ public partial class Board : Node2D
 
     [Export] public Node2D DiscContainer { get; set; }
 
+    public GameSetup Settings { get; set; }
+
     public int CellSize { get; private set; }
 	
     private int[,] grid; // Rows x Columns
@@ -30,16 +26,16 @@ public partial class Board : Node2D
     public override void _Ready()
     {
         this.SetCellSize();
-        this.grid = new int[this.Rows, this.Columns];
+        this.grid = new int[this.Settings.Rows, this.Settings.Columns];
         this.ClearBoard();
         this.SetupBackgrounds();
     }
 
     public void ClearBoard()
     {
-        for (int row = 0; row < this.Rows; row++)
+        for (int row = 0; row < this.Settings.Rows; row++)
         {
-            for (int column = 0; column < this.Columns; column++)
+            for (int column = 0; column < this.Settings.Columns; column++)
             {
                 this.grid[row, column] = SlotEmpty;
             }
@@ -53,12 +49,12 @@ public partial class Board : Node2D
 
     public int DropDisc(int column, int playerId)
     {
-        if (!column.IsBetween(0, this.Columns))
+        if (!column.IsBetween(0, this.Settings.Columns))
         {
             return ColumnFull;
         }
 
-        for (int row = 0; row < this.Rows; row++)
+        for (int row = 0; row < this.Settings.Rows; row++)
         {
             if (this.grid[row, column] == SlotEmpty)
             {
@@ -91,7 +87,7 @@ public partial class Board : Node2D
             count += this.CountInDirection(row, column, deltaRow, deltaColumn, playerId);   // forwards
             count += this.CountInDirection(row, column, -deltaRow, -deltaColumn, playerId); // backwards
 
-            if (count >= this.ConnectLength)
+            if (count >= this.Settings.ConnectionLength)
             {
                 matches++;
             }
@@ -103,9 +99,9 @@ public partial class Board : Node2D
     // we don't have to check the whole board, only the top row
     public bool IsFull()
     {
-        for (int column = 0; column < this.Columns; column++)
+        for (int column = 0; column < this.Settings.Columns; column++)
         {
-            if (this.grid[this.Rows - 1, column] == SlotEmpty)
+            if (this.grid[this.Settings.Rows - 1, column] == SlotEmpty)
             {
                 return false;
             }
@@ -120,8 +116,8 @@ public partial class Board : Node2D
         int row = startRow + deltaRow;
         int column = startColumn + deltaColumn;
 		
-        while (row.IsBetween(0, this.Rows) &&
-               column.IsBetween(0, this.Columns) && 
+        while (row.IsBetween(0, this.Settings.Rows) &&
+               column.IsBetween(0, this.Settings.Columns) && 
                this.grid[row, column] == playerId)
         {
             count++;
@@ -134,16 +130,16 @@ public partial class Board : Node2D
 	
     private void SetCellSize()
     {
-        int maxRowHeight = (1080 - OffsetFromTop) / this.Rows;
-        int maxColumnWidth = 1920 / this.Columns;
+        int maxRowHeight = (1080 - OffsetFromTop) / this.Settings.Rows;
+        int maxColumnWidth = 1920 / this.Settings.Columns;
         this.CellSize = Math.Min(maxRowHeight, maxColumnWidth);
     }
 
     private void SetupBackgrounds()
     {
-        for (int row = 0; row < this.Rows; row++)
+        for (int row = 0; row < this.Settings.Rows; row++)
         {
-            for (int column = 0; column < this.Columns; column++)
+            for (int column = 0; column < this.Settings.Columns; column++)
             {
                 this.SpawnDiscBackgroundVisual(row, column);
             }
@@ -176,8 +172,8 @@ public partial class Board : Node2D
     // acts as bottom center anchor
     private Vector2 GridToLocalPosition(int row, int column)
     {
-        float boardWidth = this.Columns * this.CellSize;
-        float boardHeight = this.Rows * this.CellSize;
+        float boardWidth = this.Settings.Columns * this.CellSize;
+        float boardHeight = this.Settings.Rows * this.CellSize;
 
         float x = ((column + 0.5f) * this.CellSize) - (boardWidth / 2f);
         float y = -((row + 0.5f) * this.CellSize);

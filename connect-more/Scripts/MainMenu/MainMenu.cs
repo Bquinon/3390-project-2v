@@ -117,10 +117,13 @@ namespace ConnectMore.Scripts.MainMenu
         private void OnConfirmPressed()
         {
             // Read user-selected settings
-            int rows = (int)rowsInput.Value;
-            int cols = (int)colsInput.Value;
-            int players = (int)playersInput.Value;
-            int connect = (int)connectInput.Value;
+            GameSetup gameSetup = new()
+            {
+                Rows = (int)rowsInput.Value,
+                Columns = (int)colsInput.Value,
+                Players = (int)playersInput.Value,
+                ConnectionLength = (int)connectInput.Value,
+            };
 
             // Instantiate the game scene and store a reference
             //gameReference = GameScene.Instantiate<Node2D>();
@@ -129,19 +132,10 @@ namespace ConnectMore.Scripts.MainMenu
             //var gameManager = gameReference.GetNodeOrNull<ConnectMore.Scripts.Game.GameManager>("GameManager");
             gameManager = GameScene.Instantiate<GameManager>();
             
-            
-            
             if (gameManager != null)
             {
-                // Set the properties from the main menu
-                gameManager.Players = players;
-
-                if (gameManager.Board != null)
-                {
-                    gameManager.Board.Rows = rows;
-                    gameManager.Board.Columns = cols;
-                    gameManager.Board.ConnectLength = connect;
-                }
+                this.gameManager.Settings = gameSetup;
+                this.gameManager.Board.Settings = gameSetup;
             }
 
             // Add the game scene to the tree
