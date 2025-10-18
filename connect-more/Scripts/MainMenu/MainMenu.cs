@@ -62,10 +62,21 @@ namespace ConnectMore.Scripts.MainMenu
             setupDialog.AddChild(layout);
 
             // Input fields with defaults
-            rowsInput = CreateLabeledSpinBox(layout, "Rows:", 6, 1, 12);
-            colsInput = CreateLabeledSpinBox(layout, "Columns:", 7, 1, 12);
-            playersInput = CreateLabeledSpinBox(layout, "Players:", 2, 2, 4);
-            connectInput = CreateLabeledSpinBox(layout, "Connection Length:", 4, 3, 6);
+            if (!"user://settings.json".TryReadJsonPath(out GameSetup settings))
+            {
+                settings = new GameSetup
+                {
+                    Rows = 6,
+                    Columns = 7,
+                    Players = 2,
+                    ConnectionLength = 4,
+                };
+            }
+            
+            rowsInput = CreateLabeledSpinBox(layout, "Rows:", settings.Rows, 1, 12);
+            colsInput = CreateLabeledSpinBox(layout, "Columns:", settings.Columns, 1, 12);
+            playersInput = CreateLabeledSpinBox(layout, "Players:", settings.Players, 2, 4);
+            connectInput = CreateLabeledSpinBox(layout, "Connection Length:", settings.ConnectionLength, 3, 6);
 
             // Buttons row
             HBoxContainer buttonRow = new HBoxContainer
@@ -136,6 +147,7 @@ namespace ConnectMore.Scripts.MainMenu
             {
                 this.gameManager.Settings = gameSetup;
                 this.gameManager.Board.Settings = gameSetup;
+                gameSetup.WriteJson("user://settings.json");
             }
 
             // Add the game scene to the tree
