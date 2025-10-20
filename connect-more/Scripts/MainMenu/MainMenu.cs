@@ -4,159 +4,158 @@ using ConnectMore.Scripts.Game;
 
 namespace ConnectMore.Scripts.MainMenu
 {
-    public partial class MainMenu : Control
-    {
-        [Export] public PackedScene GameScene { get; set; }
-        
-        [Export] public PackedScene LeaderboardScene { get; set; }
+	public partial class MainMenu : Control
+	{
+		[Export] public PackedScene GameScene { get; set; }
+		
+		[Export] public PackedScene LeaderboardScene { get; set; }
 
-        private Window setupDialog;
-        private SpinBox rowsInput;
-        private SpinBox colsInput;
-        private SpinBox playersInput;
-        private SpinBox connectInput;
-        private Button confirmButton;
-        private Button cancelButton;
+		private Window setupDialog;
+		private SpinBox rowsInput;
+		private SpinBox colsInput;
+		private SpinBox playersInput;
+		private SpinBox connectInput;
+		private Button confirmButton;
+		private Button cancelButton;
 
-        // Reference to the game scene
-        private GameManager gameManager;
+		// Reference to the game scene
+		private GameManager gameManager;
 
-        public override void _Ready()
-        {
-            this.GetNode<Button>("TextureRect/VBoxContainer/Button").Pressed += this.OnStartPressed;
-            this.GetNode<Button>("TextureRect/VBoxContainer/Button2").Pressed += this.OnLeaderboardPressed;
-            
-            this.CreateSetupDialog();
-        }
+		public override void _Ready()
+		{
+			this.GetNode<Button>("TextureRect/VBoxContainer/Button").Pressed += this.OnStartPressed;
+			this.GetNode<Button>("TextureRect/VBoxContainer/Button2").Pressed += this.OnLeaderboardPressed;
+			
+			this.CreateSetupDialog();
+		}
 
-        private void OnStartPressed()
-        {
-            // Show the setup popup when Start Game is pressed
-            setupDialog.PopupCentered();
-        }
+		private void OnStartPressed()
+		{
+			// Show the setup popup when Start Game is pressed
+			setupDialog.PopupCentered();
+		}
 
-        private void OnLeaderboardPressed()
-        {
-            this.GetTree().ChangeSceneToPacked(this.LeaderboardScene);
-        }
+		private void OnLeaderboardPressed()
+		{
+			this.GetTree().ChangeSceneToPacked(this.LeaderboardScene);
+		}
 
-        private void CreateSetupDialog()
-        {
-            setupDialog = new Window
-            {
-                Title = "Game Setup",
-                Size = new Vector2I(400, 300),
-                Visible = false
-            };
+		private void CreateSetupDialog()
+		{
+			setupDialog = new Window
+			{
+				Title = "Game Setup",
+				Size = new Vector2I(400, 300),
+				Visible = false
+			};
 
-            VBoxContainer layout = new VBoxContainer
-            {
-                AnchorsPreset = (int)Control.LayoutPreset.FullRect,
-                OffsetLeft = 20,
-                OffsetTop = 20,
-                OffsetRight = -20,
-                OffsetBottom = -20
-            };
+			VBoxContainer layout = new VBoxContainer
+			{
+				AnchorsPreset = (int)Control.LayoutPreset.FullRect,
+				OffsetLeft = 20,
+				OffsetTop = 20,
+				OffsetRight = -20,
+				OffsetBottom = -20
+			};
 
-            layout.AddThemeConstantOverride("separation", 12);
-            setupDialog.AddChild(layout);
+			layout.AddThemeConstantOverride("separation", 12);
+			setupDialog.AddChild(layout);
 
-            // Input fields with defaults
-            if (!"user://settings.json".TryReadJsonPath(out GameSetup settings))
-            {
-                settings = new GameSetup
-                {
-                    Rows = 6,
-                    Columns = 7,
-                    Players = 2,
-                    ConnectionLength = 4,
-                };
-            }
-            
-            rowsInput = CreateLabeledSpinBox(layout, "Rows:", settings.Rows, 1, 12);
-            colsInput = CreateLabeledSpinBox(layout, "Columns:", settings.Columns, 1, 12);
-            playersInput = CreateLabeledSpinBox(layout, "Players:", settings.Players, 2, 4);
-            connectInput = CreateLabeledSpinBox(layout, "Connection Length:", settings.ConnectionLength, 3, 6);
+			// Input fields with defaults
+			if (!"user://settings.json".TryReadJsonPath(out GameSetup settings))
+			{
+				settings = new GameSetup
+				{
+					Rows = 6,
+					Columns = 7,
+					Players = 2,
+					ConnectionLength = 4,
+				};
+			}
+			
+			rowsInput = CreateLabeledSpinBox(layout, "Rows:", settings.Rows, 1, 12);
+			colsInput = CreateLabeledSpinBox(layout, "Columns:", settings.Columns, 1, 12);
+			playersInput = CreateLabeledSpinBox(layout, "Players:", settings.Players, 2, 4);
+			connectInput = CreateLabeledSpinBox(layout, "Connection Length:", settings.ConnectionLength, 3, 6);
 
-            // Buttons row
-            HBoxContainer buttonRow = new HBoxContainer
-            {
-                Alignment = BoxContainer.AlignmentMode.Center
-            };
-            buttonRow.AddThemeConstantOverride("separation", 16);
+			// Buttons row
+			HBoxContainer buttonRow = new HBoxContainer
+			{
+				Alignment = BoxContainer.AlignmentMode.Center
+			};
+			buttonRow.AddThemeConstantOverride("separation", 16);
 
-            confirmButton = new Button { Text = "Start Game", SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
-            cancelButton = new Button { Text = "Cancel", SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
+			confirmButton = new Button { Text = "Start Game", SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
+			cancelButton = new Button { Text = "Cancel", SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
 
-            confirmButton.Pressed += OnConfirmPressed;
-            cancelButton.Pressed += () => setupDialog.Hide();
+			confirmButton.Pressed += OnConfirmPressed;
+			cancelButton.Pressed += () => setupDialog.Hide();
 
-            buttonRow.AddChild(confirmButton);
-            buttonRow.AddChild(cancelButton);
-            layout.AddChild(buttonRow);
+			buttonRow.AddChild(confirmButton);
+			buttonRow.AddChild(cancelButton);
+			layout.AddChild(buttonRow);
 
-            this.AddChild(setupDialog);
-        }
+			this.AddChild(setupDialog);
+		}
 
-        private SpinBox CreateLabeledSpinBox(VBoxContainer layout, string labelText, double defaultValue, double min, double max)
-        {
-            HBoxContainer row = new HBoxContainer();
-            row.AddThemeConstantOverride("separation", 10);
+		private SpinBox CreateLabeledSpinBox(VBoxContainer layout, string labelText, double defaultValue, double min, double max)
+		{
+			HBoxContainer row = new HBoxContainer();
+			row.AddThemeConstantOverride("separation", 10);
 
-            Label label = new Label
-            {
-                Text = labelText,
-                CustomMinimumSize = new Vector2(180, 30),
-                HorizontalAlignment = HorizontalAlignment.Right,
-                VerticalAlignment = VerticalAlignment.Center
-            };
+			Label label = new Label
+			{
+				Text = labelText,
+				CustomMinimumSize = new Vector2(180, 30),
+				HorizontalAlignment = HorizontalAlignment.Right,
+				VerticalAlignment = VerticalAlignment.Center
+			};
 
-            SpinBox spin = new SpinBox
-            {
-                MinValue = min,
-                MaxValue = max,
-                Value = defaultValue,
-                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
-            };
+			SpinBox spin = new SpinBox
+			{
+				MinValue = min,
+				MaxValue = max,
+				Value = defaultValue,
+				SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+			};
 
-            row.AddChild(label);
-            row.AddChild(spin);
-            layout.AddChild(row);
-            return spin;
-        }
+			row.AddChild(label);
+			row.AddChild(spin);
+			layout.AddChild(row);
+			return spin;
+		}
 
-        private void OnConfirmPressed()
-        {
-            // Read user-selected settings
-            GameSetup gameSetup = new()
-            {
-                Rows = (int)rowsInput.Value,
-                Columns = (int)colsInput.Value,
-                Players = (int)playersInput.Value,
-                ConnectionLength = (int)connectInput.Value,
-            };
+		private void OnConfirmPressed()
+		{
+			// Read user-selected settings
+			GameSetup gameSetup = new()
+			{
+				Rows = (int)rowsInput.Value,
+				Columns = (int)colsInput.Value,
+				Players = (int)playersInput.Value,
+				ConnectionLength = (int)connectInput.Value,
+			};
 
-            // Instantiate the game scene and store a reference
-            //gameReference = GameScene.Instantiate<Node2D>();
+			// Instantiate the game scene and store a reference
+			//gameReference = GameScene.Instantiate<Node2D>();
 
-            // Reference the GameManager node
-            //var gameManager = gameReference.GetNodeOrNull<ConnectMore.Scripts.Game.GameManager>("GameManager");
-            gameManager = GameScene.Instantiate<GameManager>();
-            
-            if (gameManager != null)
-            {
-                this.gameManager.Settings = gameSetup;
-                this.gameManager.Board.Settings = gameSetup;
-                gameSetup.WriteJson("user://settings.json");
-            }
+			// Reference the GameManager node
+			//var gameManager = gameReference.GetNodeOrNull<ConnectMore.Scripts.Game.GameManager>("GameManager");
+			gameManager = GameScene.Instantiate<GameManager>();
+			
+			if (gameManager != null)
+			{
+				this.gameManager.Settings = gameSetup;
+				this.gameManager.Board.Settings = gameSetup;
+				gameSetup.WriteJson("user://settings.json");
+			}
 
-            // Add the game scene to the tree
-            GetTree().Root.AddChild(this.gameManager);
+			// Add the game scene to the tree
+			GetTree().Root.AddChild(this.gameManager);
 
-            // Hide/remove main menu
-            this.Hide();
-            this.QueueFree();
-        }
-    }
+			// Hide/remove main menu
+			this.Hide();
+			this.QueueFree();
+		}
+	}
 }
-
